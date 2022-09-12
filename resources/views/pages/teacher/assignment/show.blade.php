@@ -172,3 +172,9 @@
         @endif
     </div>
 @endsection
+
+<script>
+    function Modal{
+
+    }
+</script>

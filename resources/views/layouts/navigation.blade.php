@@ -28,8 +28,8 @@
                                 </a>
                             </li>
                         @endif
-                        <li class="menu-item list-slots {{request()->segment(1) == 'subject' ? 'active' : '' }}">
-                            <a class="" href="{{url('/subject/create')}}" title="Subjects">
+                        <li class="menu-item list-slots {{request()->segment(1) == 'list-subject' ? 'active' : '' }}">
+                            <a class="" href="{{url('/list-subject')}}" title="Subjects">
                                 <i class="las la-book"></i> Subjects
                             </a>
                         </li>
@@ -39,7 +39,7 @@
                             </a>
                         </li>
                         <li class="menu-item list-assignments user-support-link">
-                            <a class="" href="#support" title="Support">
+                            <a class="support" data-toggle="modal" data-target="#userSupportModal" title="Support">
                                 <i class="la la-support"></i> Support
                             </a>
                         </li>
@@ -50,9 +50,11 @@
                 </ul>
             </nav>
         </div>
-        <ul id="header-account" class="header-account none-list">
+        <ul class="header-account none-list">
             <li class="user-support-link">
-                <h3 class="fs-16 mg-b-0 mg-r-4">Support</h3>
+                <a class="support" data-toggle="modal" data-target="#userSupportModal" title="Support">
+                    <h3 class="fs-16 mg-b-0 mg-r-4">Support</h3>
+                </a>
             </li>
             <li class="user-guide-link">
                 <a class="" href="https://faistatic.edunext.vn/assets/attachments/Huong_dan_KTXH_tren_EduNext_Sp22_Sinh_Vien.pdf" target="_blank" title="User Guide">User Guide</a>
@@ -98,7 +100,9 @@
                             <a href="{{ url('/profile') }}" title="{{ Auth::user()->email }}">
                                 <div class="user-box">
                                     <span class="avatar-place-holder in-action-box">
-                                        <img src="{{(Auth::user()->avatar) ? asset(Auth::user()->avatar) : asset('uploads/avatar/user-default.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                                        <img src="{{(Auth::user()->avatar) ? asset(Auth::user()->avatar) : asset('uploads/avatar/user-default.png') }}"
+                                             alt class="w-px-40 h-auto rounded-circle"
+                                        />
                                     </span>
                                     <div class="right">
                                         <p class="user-name">
@@ -125,3 +129,27 @@
     </div>
 </header>
 <!---End Site Header-->
+
+<div class="modal fade" id="userSupportModal" role="dialog" tabindex="-1" aria-labelledby="supportModal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Email: </label>
+                        <input type="text" class="form-control" id="email" placeholder="Enter your email here">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" value="Accept" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

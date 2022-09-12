@@ -7,129 +7,134 @@
 @section('content')
     <!-- Display flashed session data on successful update -->
     @include('pages.teacher.session-data')
+    <div class="row">
+        <div class="col-xs-8 col-md-8" style="margin: 10px auto 40px">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        @if ($user->id == Auth::user()->id)
+                            Your profile's information, <strong>{{ $user->first_name }}</strong>.
+                        @else
+                            Profile of {{ $user->first_name }} {{ $user->last_name }}.
+                        @endif
+                    </h4>
+                </div>
+                <div class="panel-body">
+                    <div class="col-xs-8 col-md-8">
+                        @if ($user->id == Auth::user()->id)
+                            <p><strong>Avatar:</strong> {{ $user->avatar }}</p>
+                            <p><strong>First name:</strong> {{ $user->first_name }}</p>
+                            <p><strong>Last name:</strong> {{ $user->last_name }}</p>
+                            <p><strong>Role:</strong> {{ $user->role }}</p>
+                            <p><strong>Email:</strong> {{ $user->email }}</p>
+                            <p><strong>Updated:</strong> {{ $user->updated_at }}</p>
+                        @else
+                            <h3>Contact Form</h3>
+                            <hr>
+                            <!-- Private Message -->
+                            <form class="form-horizontal" role="form" method="POST"
+                                  action="{{ url('/user/' . $user->id . '/message') }}">
+                                {{ csrf_field() }}
 
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                @if ($user->id == Auth::user()->id)
-                    Your profile's information, <strong>{{ $user->first_name }}</strong>.
-                @else
-                    Profile of {{ $user->first_name }} {{ $user->last_name }}.
-                @endif
-            </h4>
-        </div>
-        <div class="panel-body">
-            <div class="col-xs-12 col-md-12">
-                @if ($user->id == Auth::user()->id)
-                    <p><strong>Avatar:</strong> {{ $user->avatar }}</p>
-                    <p><strong>First name:</strong> {{ $user->first_name }}</p>
-                    <p><strong>Last name:</strong> {{ $user->last_name }}</p>
-                    <p><strong>Role:</strong> {{ $user->role }}</p>
-                    <p><strong>Email:</strong> {{ $user->email }}</p>
-                    <p><strong>Updated:</strong> {{ $user->updated_at }}</p>
-                @else
-                    <h3>Contact Form</h3>
-                    <hr>
-                    <!-- Private Message -->
-                    <form class="form-horizontal" role="form" method="POST"
-                          action="{{ url('/user/' . $user->id . '/message') }}">
-                        {{ csrf_field() }}
+                                <!-- Title -->
+                                <div class="form-group {{ $errors->has('title') ? ' has-error': ''}}">
+                                    <label class="col-md-3 control-label">Title</label>
 
-                        <!-- Title -->
-                        <div class="form-group {{ $errors->has('title') ? ' has-error': ''}}">
-                            <label class="col-md-3 control-label">Title</label>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="title"
+                                               value="{{ $errors->has('title') ? old('title') : '' }}"
+                                               placeholder="Question about this weeks homework...">
 
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" name="title"
-                                       value="{{ $errors->has('title') ? old('title') : '' }}"
-                                       placeholder="Question about this weeks homework...">
+                                        @if ($errors->has('title'))
+                                            <span class="help-block"><strong>{{ $errors->first('title') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                                @if ($errors->has('title'))
-                                    <span class="help-block"><strong>{{ $errors->first('title') }}</strong></span>
-                                @endif
-                            </div>
-                        </div>
+                                <!-- Message -->
+                                <div class="form-group {{ $errors->has('message') ? ' has-error': ''}}">
+                                    <label class="col-md-3 control-label">Message</label>
 
-                        <!-- Message -->
-                        <div class="form-group {{ $errors->has('message') ? ' has-error': ''}}">
-                            <label class="col-md-3 control-label">Message</label>
-
-                            <div class="col-md-6">
+                                    <div class="col-md-6">
                                 <textarea class="form-control" name="message"
                                           rows="3">{{ $errors->has('message') ? old('message') : '' }}</textarea>
 
-                                @if ($errors->has('message'))
-                                    <span class="help-block"><strong>{{ $errors->first('message') }}</strong></span>
-                                @endif
-                            </div>
-                        </div>
+                                        @if ($errors->has('message'))
+                                            <span class="help-block"><strong>{{ $errors->first('message') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                        <!-- Submit Button -->
-                        <div class="form-group">
-                            <div class="col-md-4 col-md-offset-7">
-                                <button type="submit" class="btn btn-primary">Send</button>
-                            </div>
-                        </div>
+                                <!-- Submit Button -->
+                                <div class="form-group">
+                                    <div class="col-md-4 col-md-offset-7">
+                                        <button type="submit" class="btn btn-primary">Send</button>
+                                    </div>
+                                </div>
 
-                    </form>
-                @endif
+                            </form>
+                        @endif
 
-                @if ($user->id == Auth::user()->id)
-                    <h3>Edit Form</h3>
-                    <hr>
+                        @if ($user->id == Auth::user()->id)
+                            <h3>Edit Information</h3>
+                            <hr>
 
-                    <!-- Edit Form -->
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/profile/update') }}">
-                        {{ csrf_field() }}
-                        <!-- Avatar -->
-                        <div class="form-group{{ $errors->has('avatar') ? ' has-error': ''}}">
-                            <label class="col-md-3 col-md-offset-1 control-label">Avatar</label>
-                            <div class="col-md-6">
-                                <input type="file" class="form-control" name="avatar"
-                                       value="{{ $errors->has('avatar') ? old('avatar') : $user->avatar }}">
+                            <!-- Edit Form -->
+                            <form class="form-horizontal" role="form" method="POST" action="{{ url('/profile/update') }}">
+                                {{ csrf_field() }}
+                                <!-- Avatar -->
+                                <div class="form-group{{ $errors->has('avatar') ? ' has-error': ''}}">
+                                    <label class="col-md-3 col-md-offset-1 control-label">Avatar</label>
+                                    <div class="col-md-6">
+                                        <input type="file" class="form-control" name="avatar"
+                                               value="{{ $errors->has('avatar') ? old('avatar') : $user->avatar }}">
 
-                                @if ($errors->has('avatar'))
-                                    <span class="help-block"><strong>{{ $errors->first('avatar') }}</strong></span>
-                                @endif
-                            </div>
-                        </div>
+                                        @if ($errors->has('avatar'))
+                                            <span class="help-block"><strong>{{ $errors->first('avatar') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                        <!-- First Name -->
-                        <div class="form-group{{ $errors->has('first_name') ? ' has-error': ''}}">
-                            <label class="col-md-3 col-md-offset-1 control-label">First Name</label>
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" name="first_name"
-                                       value="{{ $errors->has('first_name') ? old('first_name') : $user->first_name }}">
+                                <!-- First Name -->
+                                <div class="form-group{{ $errors->has('first_name') ? ' has-error': ''}}">
+                                    <label class="col-md-3 col-md-offset-1 control-label">First Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="first_name"
+                                               value="{{ $errors->has('first_name') ? old('first_name') : $user->first_name }}">
 
-                                @if ($errors->has('first_name'))
-                                    <span class="help-block"><strong>{{ $errors->first('last_name') }}</strong></span>
-                                @endif
-                            </div>
-                        </div>
+                                        @if ($errors->has('first_name'))
+                                            <span class="help-block"><strong>{{ $errors->first('last_name') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                        <!-- Last Name -->
-                        <div class="form-group{{ $errors->has('last_name') ? ' has-error': ''}}">
-                            <label class="col-md-3 col-md-offset-1 control-label">Last Name</label>
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" name="last_name"
-                                       value="{{ $errors->has('last_name') ? old('last_name') : $user->last_name }}">
+                                <!-- Last Name -->
+                                <div class="form-group{{ $errors->has('last_name') ? ' has-error': ''}}">
+                                    <label class="col-md-3 col-md-offset-1 control-label">Last Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="last_name"
+                                               value="{{ $errors->has('last_name') ? old('last_name') : $user->last_name }}">
 
-                                @if ($errors->has('last_name'))
-                                    <span class="help-block"><strong>{{ $errors->first('last_name') }}</strong></span>
-                                @endif
-                            </div>
-                        </div>
+                                        @if ($errors->has('last_name'))
+                                            <span class="help-block"><strong>{{ $errors->first('last_name') }}</strong></span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                        <!-- Submit Button -->
-                        <div class="form-group">
-                            <div class="col-md-4 col-md-offset-8">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                @endif
+                                <!-- Submit Button -->
+                                <div class="form-group">
+                                    <div class="col-md-4 col-md-offset-8">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        @endif
 
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+
 @endsection

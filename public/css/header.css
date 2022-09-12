@@ -5757,8 +5757,8 @@ figure.table > table td {
     /*pointer-events: none*/ }
 
 .btn-primary {
-    color: var(--main-color);
-    background: var(--btn-background); }
+    color: var(--bg-block);
+    background: var(--seawater); }
 .btn-primary:not(.disabled):hover {
     background: var(--btn-hv-background);
     color: var(--btn-hv-color); }

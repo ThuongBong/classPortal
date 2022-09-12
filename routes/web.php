@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\SubjectController;
 
 
 /*
@@ -37,6 +38,12 @@ Route::get('/about-us', function (){
 Route::get('/terms', function (){
     return view('pages.terms');
 });
+Route::get('/show-subject', function (){
+    return view('pages.student.subject.show');
+});
+Route::get('/show-assignment', function (){
+    return view('pages.student.assignment.show');
+});
 
 // User Routes
 Route::get('/profile', [UserController::class, 'show']);
@@ -58,11 +65,11 @@ Route::post('/subject/new/save', [ClassController::class, 'saveNewSubject']);
 Route::post('/url/',[ClassController::class,'urlLink']);
 
 // Subjects Routes
-Route::get('/subject/create', [\App\Http\Controllers\SubjectController::class, 'create']);
-Route::get('/subject/{id}', [\App\Http\Controllers\SubjectController::class, 'show']);
-Route::post('/subject', [\App\Http\Controllers\SubjectController::class, 'store']);
-Route::put('/subject/{id}', [\App\Http\Controllers\SubjectController::class, 'update']);
-Route::delete('/subject/{id}', [\App\Http\Controllers\SubjectController::class, 'destroy']);
+Route::get('/subject/create', [SubjectController::class, 'create']);
+Route::get('/subject/{id}', [SubjectController::class, 'show']);
+Route::post('/subject', [SubjectController::class, 'store']);
+Route::put('/subject/{id}', [SubjectController::class, 'update']);
+Route::delete('/subject/{id}', [SubjectController::class, 'destroy']);
 
 // Assignment Routes
 Route::post('/subject/{id}/assignment', [AssignmentController::class, 'store']);
