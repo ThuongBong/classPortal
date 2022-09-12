@@ -6,11 +6,10 @@ use App\Models\Classes_Subject;
 use App\Models\Classes_User;
 use App\Models\Subject;
 use Illuminate\Http\Request;
-
-
 use Illuminate\Support\Facades\Auth;
 use App\Models\Classes;
 use App\Models\User;
+use App\Models\Assignment;
 use Illuminate\Support\Facades\DB;
 
 class ClassController extends Controller
@@ -23,65 +22,54 @@ class ClassController extends Controller
         $this->middleware('auth');
     }
 
-//    public function show($id)
-//    {
-//        //in ra list subjects ở trong class do
-//    }
-
-    //chuyển phần này qua subjects
-
 
     //* Show details about a particular subjects - GET
 
     public function show($id)
     {
         $class = Classes::find($id);
-//        dd($class);
         $subjects = Subject::all();
-//        dd($class_show);
+
         $classes = DB::table('classes_subjects')
             ->where('class_id', $id)
             ->join('subjects', function ($join) {
                 $join->on('classes_subjects.subject_id', '=', 'subjects.id');
             })
-            ->get();;
-//        dd($classes);
+            ->get();
+        $users = DB::table('classes_users')
+            ->where('class_id', $id)
+            ->join('users', function ($join) {
+                $join->on('classes_users.user_id', '=', 'users.id');
+            })
+            ->where("users.role", '=', "student")
+            ->get();
+//        dd($users);
+//        $user_teacher = DB::table('classes_users')
+//            ->where('class_id', $id)
+//            ->join('users', function ($join) {
+//                $join->on('classes_users.user_id', '=', 'users.id');
+//            })
+//            ->where("users.role", '=', "teacher")
+//            ->get();
+////        dd($users);
         $instructor = Auth::user();
-
-//        $assignments = $class->assignments()->orderBy('due_date', 'desc')->get();
 
         // Grab all the recent activity, which includes
         // assignments and annoucement, then sort date that
         // it was created
         $recent_activity = array();
-//
-//        if (count($assignments) > 0 || count($assignments) > 0) {
-//            foreach ($assignments as $assignment) {
-//                $assignment->type = 'assignment';
-//                array_push($recent_activity, $assignment);
-//            }
-//
-//            usort($recent_activity, function($a, $b) {
-//                if ($a->created_at == $b->created_at) {
-//                    return 0;
-//                }
-//                return ($a->created_at > $b->created_at) ? -1 : 1;
-//            });
-        //   }
-//        if ($class->save()) {
-        // Insert information into the pivot table for users and classes
-//            $classes->class_id=$class->id;
-//            $classes->subject_id=$subjects->id;
-//            $classes->save();
-//            return redirect('/class/show')->with('status', 'Class added successfully!');
-        //   }
+        $userId = $instructor->id;
+        $assignments = Assignment::with('subject')->where(['teacher_id' => $userId, 'class_id' => $id])->orderByDesc('id')->paginate(NUMBER_PAGINATION);
+
         return view('pages.teacher.class.show', [
             'class1' => $class,
             'instructor' => $instructor,
             'class_id' => $id,
             'classes' => $classes,
+            'users' => $users,
+//            'user_teacher'=>$user_teacher,
             'subjects' => $subjects,
-//            'assignments' => $assignments,
+            'assignments' => $assignments,
             'recent_activity' => $recent_activity
         ]);
     }
@@ -114,7 +102,7 @@ class ClassController extends Controller
         $class->title = $request->input('title');
         $class->room = $request->input('room');
         $class->section = $request->input('section');
-        $class->class_code= base64_encode("class_".$class->id);
+        $class->class_code = base64_encode("class_".$class->id.time());
 
         if ($class->save()) {
             // Insert information into the pivot table for users and classes
@@ -150,7 +138,6 @@ class ClassController extends Controller
 
     public function saveSubject(Request $request)
     {
-//        $class2 = new Classes;
         $class_subject = new Classes_Subject();
         // Insert information into the pivot table for users and classes
         $class_subject->class_id = $request->input('class_id');
@@ -161,19 +148,24 @@ class ClassController extends Controller
     }
 
     public function saveNewSubject(Request $request){
-        $class_id = new Classes();
-//        dd($class2);
-        $class_subject = new Classes_Subject();
-//        dd($class_subject);
-        $class_id->name = $request->input('name');
-        $class_id->title = $request->input('title');
-        $class_id->room = $request->input('room');
-        $class_id->section = $request->input('section');
-        // Insert information into the pivot table for users and classes
-        $class_subject->class_id = $request->input('class_id');
-        $class_subject->subject_id = $class_subject->id;
-        $class_subject->save();
-        return back()->with('status', 'Class added successfully!');
+
+        \DB::beginTransaction();
+        try {
+            $subject = new Subject();
+            $subject->name = $request->name;
+            $subject->description = $request->description;
+            if ($subject->save()) {
+                $class_subject =  new Classes_Subject();
+                $class_subject->class_id = $request->class_id;
+                $class_subject->subject_id = $subject->id;
+                $class_subject->save();
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Successfully added new');
+        } catch (\Exception $exception) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'An error occurred while saving data');
+        }
     }
 
     /**
@@ -193,5 +185,9 @@ class ClassController extends Controller
         }
 
         return redirect('/class/' . $class_id)->with('status', 'Students added to the class successfully!');
+    }
+
+    public function urlLink(){
+        $user_id = Auth::user()->id;
     }
 }

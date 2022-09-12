@@ -46,13 +46,16 @@ Route::get('/class/{class_id}/students', [UserController::class, 'showAll']);
 
 // Class Routes
 Route::get('/class/create', [ClassController::class, 'create']);
-Route::get('/class/{id}', [ClassController::class, 'show']);
+Route::get('/class/{id}', [ClassController::class, 'show'])->name('class.detail');
 Route::post('/class', [ClassController::class, 'store']);
 Route::put('/class/{id}', [ClassController::class, 'update']);
 Route::delete('/class/{id}', [ClassController::class, 'destroy']);
 Route::post('/class/{class_id}/student', [ClassController::class, 'addStudents']);
 Route::post('/subject/save/', [ClassController::class, 'saveSubject']);
 Route::post('/subject/new/save', [ClassController::class, 'saveNewSubject']);
+
+
+Route::post('/url/',[ClassController::class,'urlLink']);
 
 // Subjects Routes
 Route::get('/subject/create', [\App\Http\Controllers\SubjectController::class, 'create']);
@@ -74,3 +77,26 @@ Route::delete('/message/{message_id}', [MessageController::class, 'destroy']);
 Route::get('/message/', [MessageController::class, 'showAll']);
 
 
+Route::group(['prefix' => 'teacher/assignments', 'namespace' => 'Teacher'], function(){
+    Route::get('/', 'AssignmentController@index')->name('teacher.assignment.index');
+    Route::get('/create','AssignmentController@create')->name('teacher.assignment.create');
+    Route::post('/create','AssignmentController@store');
+
+    Route::get('/update/{id}','AssignmentController@edit')->name('teacher.assignment.update');
+    Route::post('/update/{id}','AssignmentController@update');
+
+    Route::get('/delete/{id}','AssignmentController@delete')->name('teacher.assignment.delete');
+
+    Route::post('/get/subject/by/class','AssignmentController@getsSubjectByClass')->name('get.subject.by.class');
+
+    Route::get('/answers/{id}', 'AssignmentController@answers')->name('teacher.assignment.answers');
+
+    Route::post('/get/detail/answer/{id}','AssignmentController@detailAnswer')->name('get.detail.answer');
+    Route::post('/update/mark/answer/{id}','AssignmentController@updateMark')->name('update.mark.answer');
+});
+
+Route::group(['prefix' => 'student/assignments', 'namespace' => 'Student'], function(){
+    Route::get('/', 'AssignmentController@index')->name('student.assignment.index');
+    Route::get('/detail/{id}', 'AssignmentController@detail')->name('student.assignment.detail');
+    Route::post('/answer/{id}','AssignmentController@answer')->name('student.assignment.answer');
+});

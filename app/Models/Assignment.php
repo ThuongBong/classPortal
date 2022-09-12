@@ -13,7 +13,7 @@ class Assignment extends Model
     protected $keyType ='integer';
 
     protected $fillable = [
-      'title', 'description', 'source', 'due_date', 'subject_id'
+      'title', 'description', 'source', 'due_date', 'subject_id', 'teacher_id', 'class_id'
     ];
 
     /**
@@ -61,9 +61,9 @@ class Assignment extends Model
      *
      * @return Response
      */
-    public function subjects()
+    public function subject()
     {
-        return $this->belongsTo('App\Models\Subject');
+        return $this->belongsTo(Subject::class, 'subject_id', 'id');
     }
 
     /**

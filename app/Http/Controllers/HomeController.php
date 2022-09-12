@@ -25,7 +25,6 @@ class HomeController extends Controller
         $recent_activity = array();
 
         $classes = Auth::user()->classes()->get();
-//        dd($classes);
 
         foreach ($classes as $class) {
             if ($class->get()) {
@@ -53,9 +52,7 @@ class HomeController extends Controller
                 'recent_activity' => $recent_activity
             ]);
         } else {
-            return view('pages.student.home', [
-
-            ]);
+            return view('pages.student.home', []);
         }
 
 

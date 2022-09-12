@@ -12,6 +12,7 @@ class Classes_Subject extends Model
     protected $keyType ='integer';
 
     protected $fillable = [
-        'class_id','subject_id',
+        'class_id', 'subject_id',
     ];
+    public $timestamps = false;
 }

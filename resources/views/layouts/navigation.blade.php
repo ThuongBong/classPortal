@@ -1,4 +1,5 @@
 <!---Site Header-->
+@php $user = Auth::user() @endphp
 <header id="site-header" class="site-header">
     <div class="container site-header-container">
 
@@ -32,8 +33,8 @@
                                 <i class="las la-book"></i> Subjects
                             </a>
                         </li>
-                        <li class="menu-item list-assignments {{request()->segment(1) == 'list-assignment' ? 'active' : '' }}">
-                            <a class="" href="/list-assignment" title="Assignments">
+                        <li class="menu-item list-assignments {{request()->segment(2) == 'assignments' ? 'active' : '' }}">
+                            <a class="" href="{{ $user->role == 'student' ? route('student.assignment.index') : route('teacher.assignment.index') }}" title="Assignments">
                                 <i class="las la-book"></i> Assignments
                             </a>
                         </li>
